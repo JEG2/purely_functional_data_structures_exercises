@@ -31,33 +31,37 @@ defmodule BinaryTree do
 
   def insert(node, new_value, ordering \\ Comparisons) do
     try do
-      do_insert(node, new_value, ordering)
+      do_insert(node, new_value, ordering, nil)
     rescue
-      DuplicateInsertionError -> IO.inspect(:called); node
+      DuplicateInsertionError -> node
     end
   end
 
-  def do_insert(nil, new_value, _ordering), do: %__MODULE__{value: new_value}
+  def do_insert(nil, new_value, ordering, candidate) do
+    if ordering.eq(candidate, new_value) do
+      raise DuplicateInsertionError
+    else
+      %__MODULE__{value: new_value}
+    end
+  end
   def do_insert(
-    node = %__MODULE__{left: left, value: value, right: right},
+    %__MODULE__{left: left, value: value, right: right},
     new_value,
-    ordering
+    ordering,
+    candidate
   ) do
-    cond do
-      ordering.lt(new_value, value) ->
-        %__MODULE__{
-          left: insert(left, new_value, ordering),
-          value: value,
-          right: right
-        }
-      ordering.lt(value, new_value) ->
-        %__MODULE__{
-          left: left,
-          value: value,
-          right: insert(right, new_value, ordering)
-        }
-      true ->
-        raise DuplicateInsertionError
+    if ordering.lt(new_value, value) do
+      %__MODULE__{
+        left: do_insert(left, new_value, ordering, candidate),
+        value: value,
+        right: right
+      }
+    else
+      %__MODULE__{
+        left: left,
+        value: value,
+        right: do_insert(right, new_value, ordering, value)
+      }
     end
   end
 end

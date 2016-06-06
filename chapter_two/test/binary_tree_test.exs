@@ -37,6 +37,19 @@ defmodule BinaryTreeTest do
     assert ComparisonCounter.get_count == 5
   end
 
+  test "reduce insert() comparisons to depth + 1" do
+    root = tree(1..5)
+    {:ok, _pid} = ComparisonCounter.start_link
+
+    inserted = BinaryTree.insert(root, 6, ComparisonCounter)
+    assert BinaryTree.member?(inserted, 6)
+    assert ComparisonCounter.get_count == 6
+
+    ComparisonCounter.reset
+    BinaryTree.insert(root, 3, ComparisonCounter)
+    assert ComparisonCounter.get_count == 5
+  end
+
   defp tree(enum) do
     Enum.reduce(enum, BinaryTree.empty, fn value, node ->
       BinaryTree.insert(node, value)
