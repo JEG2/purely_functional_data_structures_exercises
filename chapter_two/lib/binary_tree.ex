@@ -65,10 +65,19 @@ defmodule BinaryTree do
     end
   end
 
-  def complete(value, depth), do: do_complete(value, depth, nil)
+  def complete(value, depth), do: do_complete(value, depth)
 
-  defp do_complete(_value, 0, tree), do: tree
-  defp do_complete(value, depth, tree) do
-    do_complete(value, depth - 1, %__MODULE__{value: value, right: tree})
+  defp do_complete(_value, 0), do: nil
+  defp do_complete(value, depth) do
+    left_depth = div(depth - 1, 2)
+    right_depth = depth - 1 - left_depth
+    left = do_complete(value, left_depth)
+    right =
+      if left_depth == right_depth do
+        left
+      else
+        do_complete(value, right_depth)
+      end
+    %__MODULE__{left: left, value: value, right: right}
   end
 end
