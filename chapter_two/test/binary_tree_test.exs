@@ -50,9 +50,19 @@ defmodule BinaryTreeTest do
     assert ComparisonCounter.get_count == 5
   end
 
+  test "complete" do
+    root = BinaryTree.complete(42, 5)
+    assert to_list(root) == [42, 42, 42, 42, 42]
+  end
+
   defp tree(enum) do
     Enum.reduce(enum, BinaryTree.empty, fn value, node ->
       BinaryTree.insert(node, value)
     end)
+  end
+
+  defp to_list(nil), do: [ ]
+  defp to_list(node) do
+    to_list(node.left) ++ [node.value] ++ to_list(node.right)
   end
 end

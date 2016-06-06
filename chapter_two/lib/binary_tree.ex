@@ -37,14 +37,14 @@ defmodule BinaryTree do
     end
   end
 
-  def do_insert(nil, new_value, ordering, candidate) do
+  defp do_insert(nil, new_value, ordering, candidate) do
     if ordering.eq(candidate, new_value) do
       raise DuplicateInsertionError
     else
       %__MODULE__{value: new_value}
     end
   end
-  def do_insert(
+  defp do_insert(
     %__MODULE__{left: left, value: value, right: right},
     new_value,
     ordering,
@@ -63,5 +63,12 @@ defmodule BinaryTree do
         right: do_insert(right, new_value, ordering, value)
       }
     end
+  end
+
+  def complete(value, depth), do: do_complete(value, depth, nil)
+
+  defp do_complete(_value, 0, tree), do: tree
+  defp do_complete(value, depth, tree) do
+    do_complete(value, depth - 1, %__MODULE__{value: value, right: tree})
   end
 end
