@@ -6,6 +6,10 @@ defmodule BinaryTree do
     def lt(left, right), do: Kernel.<(left, right)
   end
 
+  defmodule DuplicateInsertionError do
+    defexception message: "Member is already in tree"
+  end
+
   def empty, do: nil
 
   def member?(node, test_value, ordering \\ Comparisons, candidate \\ nil)
@@ -25,9 +29,16 @@ defmodule BinaryTree do
     end
   end
 
-  def insert(node, new_value, ordering \\ Comparisons)
-  def insert(nil, new_value, _ordering), do: %__MODULE__{value: new_value}
-  def insert(
+  def insert(node, new_value, ordering \\ Comparisons) do
+    try do
+      do_insert(node, new_value, ordering)
+    rescue
+      DuplicateInsertionError -> IO.inspect(:called); node
+    end
+  end
+
+  def do_insert(nil, new_value, _ordering), do: %__MODULE__{value: new_value}
+  def do_insert(
     node = %__MODULE__{left: left, value: value, right: right},
     new_value,
     ordering
@@ -46,7 +57,7 @@ defmodule BinaryTree do
           right: insert(right, new_value, ordering)
         }
       true ->
-        node
+        raise DuplicateInsertionError
     end
   end
 end
